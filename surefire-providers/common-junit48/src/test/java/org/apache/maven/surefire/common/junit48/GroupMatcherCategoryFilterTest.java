@@ -19,6 +19,10 @@ package org.apache.maven.surefire.common.junit48;
  * under the License.
  */
 
+import junit.framework.JUnit4TestAdapter;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import junit.runner.Version;
 import org.apache.maven.surefire.common.junit48.tests.group.ABCParameterizedTest;
 import org.apache.maven.surefire.common.junit48.tests.group.ABCTest;
 import org.apache.maven.surefire.common.junit48.tests.group.ATest;
@@ -27,17 +31,26 @@ import org.apache.maven.surefire.common.junit48.tests.group.BCTest;
 import org.apache.maven.surefire.common.junit48.tests.group.BTest;
 import org.apache.maven.surefire.group.match.GroupMatcher;
 import org.apache.maven.surefire.group.match.SingleGroupMatcher;
-import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.Description;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.runner.Description.createSuiteDescription;
+import static org.junit.runner.Description.createTestDescription;
 
 /**
  * Tests covering inheritance in @Categories for Test classes.
  */
 public class GroupMatcherCategoryFilterTest
 {
-
     private GroupMatcherCategoryFilter cut;
+
+    @BeforeClass
+    public static void printVersion()
+    {
+        System.out.println( Version.id() );
+    }
 
     @Test
     public void shouldMatchIncludedCategoryInSelf()
@@ -46,7 +59,7 @@ public class GroupMatcherCategoryFilterTest
             new SingleGroupMatcher( "org.apache.maven.surefire.common.junit48.tests.group.marker.CategoryB" );
         GroupMatcher excluded = null;
         cut = new GroupMatcherCategoryFilter( included, excluded );
-        Assert.assertTrue( cut.shouldRun( Description.createSuiteDescription( BTest.class ) ) );
+        assertTrue( cut.shouldRun( createSuiteDescription( BTest.class ) ) );
     }
 
     @Test
@@ -56,8 +69,8 @@ public class GroupMatcherCategoryFilterTest
             new SingleGroupMatcher( "org.apache.maven.surefire.common.junit48.tests.group.marker.CategoryB" );
         GroupMatcher excluded = null;
         cut = new GroupMatcherCategoryFilter( included, excluded );
-        Assert.assertTrue( cut.shouldRun( Description.createSuiteDescription( BCTest.class ) ) );
-        Assert.assertFalse( cut.shouldRun( Description.createSuiteDescription( ATest.class ) ) );
+        assertTrue( cut.shouldRun( createSuiteDescription( BCTest.class ) ) );
+        assertFalse( cut.shouldRun( createSuiteDescription( ATest.class ) ) );
     }
 
     @Test
@@ -67,9 +80,9 @@ public class GroupMatcherCategoryFilterTest
             new SingleGroupMatcher( "org.apache.maven.surefire.common.junit48.tests.group.marker.CategoryC" );
         GroupMatcher excluded = null;
         cut = new GroupMatcherCategoryFilter( included, excluded );
-        Assert.assertTrue( cut.shouldRun( Description.createSuiteDescription( ABCTest.class ) ) );
-        Assert.assertTrue( cut.shouldRun( Description.createSuiteDescription( BCTest.class ) ) );
-        Assert.assertFalse( cut.shouldRun( Description.createSuiteDescription( ATest.class ) ) );
+        assertTrue( cut.shouldRun( createSuiteDescription( ABCTest.class ) ) );
+        assertTrue( cut.shouldRun( createSuiteDescription( BCTest.class ) ) );
+        assertFalse( cut.shouldRun( createSuiteDescription( ATest.class ) ) );
     }
 
     @Test
@@ -79,10 +92,10 @@ public class GroupMatcherCategoryFilterTest
             new SingleGroupMatcher( "org.apache.maven.surefire.common.junit48.tests.group.marker.CategoryB" );
         GroupMatcher excluded = null;
         cut = new GroupMatcherCategoryFilter( included, excluded );
-        Assert.assertTrue( cut.shouldRun( Description.createSuiteDescription( ABCTest.class ) ) );
-        Assert.assertTrue( cut.shouldRun( Description.createTestDescription( ABCTest.class, "abc" ) ) );
-        Assert.assertTrue( cut.shouldRun( Description.createSuiteDescription( ABCParameterizedTest.class ) ) );
-        Assert.assertTrue( cut.shouldRun( Description.createTestDescription( ABCParameterizedTest.class, "abc" ) ) );
+        assertTrue( cut.shouldRun( createSuiteDescription( ABCTest.class ) ) );
+        assertTrue( cut.shouldRun( createTestDescription( ABCTest.class, "abc" ) ) );
+        assertTrue( cut.shouldRun( createSuiteDescription( ABCParameterizedTest.class ) ) );
+        assertTrue( cut.shouldRun( createTestDescription( ABCParameterizedTest.class, "abc" ) ) );
     }
 
     @Test
@@ -93,9 +106,9 @@ public class GroupMatcherCategoryFilterTest
         GroupMatcher excluded =
             new SingleGroupMatcher( "org.apache.maven.surefire.common.junit48.tests.group.marker.CategoryA" );
         cut = new GroupMatcherCategoryFilter( included, excluded );
-        Assert.assertFalse( cut.shouldRun( Description.createSuiteDescription( ABCTest.class ) ) );
-        Assert.assertTrue( cut.shouldRun( Description.createSuiteDescription( BBCTest.class ) ) );
-        Assert.assertTrue( cut.shouldRun( Description.createSuiteDescription( BTest.class ) ) );
+        assertFalse( cut.shouldRun( createSuiteDescription( ABCTest.class ) ) );
+        assertTrue( cut.shouldRun( createSuiteDescription( BBCTest.class ) ) );
+        assertTrue( cut.shouldRun( createSuiteDescription( BTest.class ) ) );
     }
 
     @Test
@@ -105,8 +118,18 @@ public class GroupMatcherCategoryFilterTest
         GroupMatcher excluded =
             new SingleGroupMatcher( "org.apache.maven.surefire.common.junit48.tests.group.marker.CategoryA" );
         cut = new GroupMatcherCategoryFilter( included, excluded );
-        Assert.assertFalse( cut.shouldRun( Description.createSuiteDescription( ATest.class ) ) );
-        Assert.assertTrue( cut.shouldRun( Description.createSuiteDescription( BTest.class ) ) );
-        Assert.assertTrue( cut.shouldRun( Description.createSuiteDescription( BBCTest.class ) ) );
+        assertFalse( cut.shouldRun( createSuiteDescription( ATest.class ) ) );
+        assertTrue( cut.shouldRun( createSuiteDescription( BTest.class ) ) );
+        assertTrue( cut.shouldRun( createSuiteDescription( BBCTest.class ) ) );
+    }
+
+    public static class JUnit4SuiteTest extends TestCase
+    {
+        public static junit.framework.Test suite()
+        {
+            TestSuite suite = new TestSuite();
+            suite.addTest( new JUnit4TestAdapter( GroupMatcherCategoryFilterTest.class ) );
+            return suite;
+        }
     }
 }
