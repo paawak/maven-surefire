@@ -85,6 +85,9 @@ public class GroupMatcherCategoryFilterPreJUnit412Test
         assertFalse( cut.shouldRun( createTestDescription( ABCParameterizedTest.class, "abc" ) ) );
     }
 
+    /**
+     *
+     */
     public static class JUnit4SuiteTest extends TestCase
     {
         public static junit.framework.Test suite()

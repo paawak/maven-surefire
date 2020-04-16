@@ -123,6 +123,9 @@ public class GroupMatcherCategoryFilterTest
         assertTrue( cut.shouldRun( createSuiteDescription( BBCTest.class ) ) );
     }
 
+    /**
+     *
+     */
     public static class JUnit4SuiteTest extends TestCase
     {
         public static junit.framework.Test suite()
