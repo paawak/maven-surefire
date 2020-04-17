@@ -525,6 +525,7 @@
             <useFile>false</useFile>
             <redirectTestOutputToFile>false</redirectTestOutputToFile>
             <jvm>${jdk.home}/bin/java</jvm>
+            <runOrder>failedfirst</runOrder>
           </configuration>
         </plugin>
         <plugin>
